@@ -1,0 +1,49 @@
+<!--
+  A red player, a button football disc seen from above. Edit it in any svg editor, see Art.ts.
+
+  - The disc fills the viewBox, the game scales it to the player's radius.
+  - #number is the player's number, set by the game. 1 is the keeper, whose #number also gets the class keeper-number.
+  - .keeper is shown on the keeper only, .outfield on everyone else.
+  - Light and shadow are drawn over it by the game, see disc-light.svg and shadow.svg.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 2 2">
+  <defs>
+    <!-- the side of the disc, seen around its top -->
+    <radialGradient id="rim" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse">
+      <stop offset="0.8" stop-color="#bf3113" />
+      <stop offset="0.9" stop-color="#8c240e" />
+      <stop offset="1" stop-color="#4c1308" />
+    </radialGradient>
+    <radialGradient id="face" cx="-0.2" cy="-0.25" r="0.84" fx="-0.2" fy="-0.25" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5120" />
+      <stop offset="1" stop-color="#e53a17" />
+    </radialGradient>
+    <radialGradient id="keeper-face" cx="-0.2" cy="-0.25" r="0.84" fx="-0.2" fy="-0.25" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4a4a4c" />
+      <stop offset="1" stop-color="#1f1f21" />
+    </radialGradient>
+  </defs>
+
+  <circle r="1" fill="url(#rim)" />
+
+  <!-- top, with rings pressed into it. The outfield top is over the keeper's, so this file previews as an outfield player -->
+  <g class="keeper">
+    <circle r="0.84" fill="url(#keeper-face)" />
+    <circle r="0.72" fill="none" stroke="#ff411a" stroke-width="0.05" />
+    <circle r="0.62" fill="none" stroke="#cc3415" stroke-width="0.02" />
+  </g>
+  <g class="outfield">
+    <circle r="0.84" fill="url(#face)" />
+    <circle r="0.72" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="0.05" />
+    <circle r="0.62" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="0.02" />
+  </g>
+
+  <circle r="0.845" fill="none" stroke="#000000" stroke-opacity="0.35" stroke-width="0.02" />
+
+  <text id="number" x="0" y="0.04" text-anchor="middle" dominant-baseline="central"
+    font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="0.75"
+    fill="#ffffff" stroke="#000000" stroke-opacity="0.45" stroke-width="0.1" stroke-linejoin="round"
+    paint-order="stroke">7</text>
+  <!-- the keeper's number, in the team color -->
+  <style>#number.keeper-number { fill: #ff4e1f; }</style>
+</svg>

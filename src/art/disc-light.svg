@@ -1,0 +1,26 @@
+<!--
+  Light over a player's disc, not turned with it: light from the top left, a glossy highlight, and a lit bevel.
+  It fills the viewBox, the game scales it to the disc, see Art.ts.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 2 2">
+  <defs>
+    <linearGradient id="light" x1="-0.7" y1="-0.7" x2="0.7" y2="0.7" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.22" />
+    </linearGradient>
+    <radialGradient id="gloss" cx="-0.3" cy="-0.35" r="0.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.45" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="bevel" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse">
+      <stop offset="0.8" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="0.86" stop-color="#ffffff" stop-opacity="0.25" />
+      <stop offset="0.92" stop-color="#000000" stop-opacity="0" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.35" />
+    </radialGradient>
+  </defs>
+  <circle r="1" fill="url(#light)" />
+  <circle r="1" fill="url(#gloss)" />
+  <circle r="1" fill="url(#bevel)" />
+</svg>

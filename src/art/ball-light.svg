@@ -1,0 +1,16 @@
+<!--
+  Light over the ball, not turned with it as it rolls: a soft highlight at the top left, darker toward the rim.
+  It fills the viewBox, the game scales it to the ball, see Art.ts.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 2 2">
+  <defs>
+    <radialGradient id="light" cx="-0.1" cy="-0.1" r="1.2" fx="-0.35" fy="-0.4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.7" />
+      <stop offset="0.12" stop-color="#ffffff" stop-opacity="0.25" />
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="0.8" stop-color="#000000" stop-opacity="0.15" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.55" />
+    </radialGradient>
+  </defs>
+  <circle r="1" fill="url(#light)" />
+</svg>

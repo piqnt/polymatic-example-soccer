@@ -1,0 +1,14 @@
+<!--
+  A soft shadow under a player or the ball. It fills the viewBox, the game scales it a little larger than the
+  disc and offsets it away from the lights, see Art.ts.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 2 2">
+  <defs>
+    <radialGradient id="shadow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.55" />
+      <stop offset="0.65" stop-color="#000000" stop-opacity="0.3" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <circle r="1" fill="url(#shadow)" />
+</svg>

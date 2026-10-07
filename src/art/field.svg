@@ -1,0 +1,168 @@
+<!--
+  The soccer field: open or edit it in any svg editor. The game reads its layout on load, see Field.ts, and paints
+  it as the ground under the game, see Art.ts.
+
+  Units are the game's, y down as on screen.
+  - viewBox: what the screen fits. The ground is painted a little past it, for screens of another shape.
+  - #wall: the boundary the players and the ball bounce off, one polygon or path. A path may curve, with arcs and
+    beziers, which the game splits into short straight segments. It is defined once, and drawn with <use>.
+  - .goal: a goal mouth, a line, data-team is the team defending it. The ball touching it is a goal.
+  - #ball: the ball's kickoff position and size.
+  - #markings: painted lines, drawn by the game over the ground so they stay sharp: line, polyline, polygon, rect,
+    circle and use, with stroke, stroke-width, stroke-opacity, fill and fill-opacity, on the group or on each shape.
+  - Everything else is the look of the ground: grass, boards, nets and goal frames, light.
+  The players' kickoff positions are not here, they come from the team's formation, see Formation.ts.
+  The game hides .goal, #ball and #markings when it paints the ground, they are drawn by the game.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-6.5 -3.9 13 7.8">
+  <defs>
+    <!-- the pitch corners are quarter circles, the goal pockets square -->
+    <path id="wall" d="
+      M -4.6,-3 H 4.6 A 0.4,0.4 0 0 1 5,-2.6 V -1.2 H 6 V 1.2 H 5 V 2.6 A 0.4,0.4 0 0 1 4.6,3
+      H -4.6 A 0.4,0.4 0 0 1 -5,2.6 V 1.2 H -6 V -1.2 H -5 V -2.6 A 0.4,0.4 0 0 1 -4.6,-3 Z" />
+    <clipPath id="inside">
+      <use href="#wall" />
+    </clipPath>
+
+    <!-- grass grain: speckles stretched along the blades, one dark and one light -->
+    <filter id="grain-dark" filterUnits="userSpaceOnUse" x="-20" y="-15" width="40" height="30"
+      color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="55 14" numOctaves="2" seed="3" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0.07  0 0 0 0 0.22  0 0 0 0 0.08  2.4 0 0 0 -1.05" />
+    </filter>
+    <filter id="grain-light" filterUnits="userSpaceOnUse" x="-20" y="-15" width="40" height="30"
+      color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="55 14" numOctaves="2" seed="11" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.72  0 0 0 0 0.36  2.2 0 0 0 -1.05" />
+    </filter>
+    <filter id="soft" filterUnits="userSpaceOnUse" x="-20" y="-15" width="40" height="30">
+      <feGaussianBlur stdDeviation="0.05" />
+    </filter>
+
+    <!-- mowing stripes, each lighter toward the side the grass is laid -->
+    <linearGradient id="stripe-dark">
+      <stop offset="0" stop-color="#3c8c3f" />
+      <stop offset="1" stop-color="#43954a" />
+    </linearGradient>
+    <linearGradient id="stripe-light">
+      <stop offset="0" stop-color="#4fa24c" />
+      <stop offset="1" stop-color="#48994a" />
+    </linearGradient>
+
+    <!-- nets: a diamond mesh, and its shadow on the grass -->
+    <pattern id="net" patternUnits="userSpaceOnUse" width="0.1" height="0.1" patternTransform="rotate(45)">
+      <path d="M0,0 H0.1 M0,0 V0.1" stroke="#ffffff" stroke-opacity="0.6" stroke-width="0.01" />
+    </pattern>
+    <pattern id="net-shadow" patternUnits="userSpaceOnUse" width="0.1" height="0.1"
+      patternTransform="translate(0.03 0.03) rotate(45)">
+      <path d="M0,0 H0.1 M0,0 V0.1" stroke="#000000" stroke-opacity="0.35" stroke-width="0.014" />
+    </pattern>
+    <linearGradient id="net-depth-left" gradientUnits="userSpaceOnUse" x1="-5" y1="0" x2="-6" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.15" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.55" />
+    </linearGradient>
+    <linearGradient id="net-depth-right" gradientUnits="userSpaceOnUse" x1="5" y1="0" x2="6" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.15" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.55" />
+    </linearGradient>
+    <radialGradient id="post" cx="0.3" cy="0.3" r="0.7" fx="0.3" fy="0.3">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#b9bbb6" />
+    </radialGradient>
+
+    <!-- stadium light, brighter over the middle -->
+    <radialGradient id="light" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="6.8">
+      <stop offset="0" stop-color="#ffffe6" stop-opacity="0.06" />
+      <stop offset="0.6" stop-color="#000000" stop-opacity="0" />
+      <stop offset="1" stop-color="#000000" stop-opacity="0.4" />
+    </radialGradient>
+  </defs>
+
+  <!-- around the pitch: trodden, darker grass -->
+  <g id="surround">
+    <rect x="-20" y="-15" width="40" height="30" fill="#24522a" />
+    <rect x="-20" y="-15" width="40" height="30" filter="url(#grain-dark)" opacity="0.6" />
+    <rect x="-20" y="-15" width="40" height="30" filter="url(#grain-light)" opacity="0.25" />
+  </g>
+
+  <!-- the board along the wall, its inner half is covered by the pitch -->
+  <g id="board" fill="none" stroke-linejoin="round">
+    <use href="#wall" stroke="#d9dcd6" stroke-width="0.24" />
+    <use href="#wall" stroke="#000000" stroke-opacity="0.25" stroke-width="0.22" />
+    <use href="#wall" stroke="#eef0ea" stroke-width="0.19" />
+  </g>
+
+  <!-- the pitch, inside the wall -->
+  <g id="pitch" clip-path="url(#inside)">
+    <rect x="-6" y="-3" width="12" height="6" fill="#2f6b30" />
+    <rect x="-5" y="-3" width="1" height="6" fill="url(#stripe-light)" />
+    <rect x="-4" y="-3" width="1" height="6" fill="url(#stripe-dark)" />
+    <rect x="-3" y="-3" width="1" height="6" fill="url(#stripe-light)" />
+    <rect x="-2" y="-3" width="1" height="6" fill="url(#stripe-dark)" />
+    <rect x="-1" y="-3" width="1" height="6" fill="url(#stripe-light)" />
+    <rect x="0" y="-3" width="1" height="6" fill="url(#stripe-dark)" />
+    <rect x="1" y="-3" width="1" height="6" fill="url(#stripe-light)" />
+    <rect x="2" y="-3" width="1" height="6" fill="url(#stripe-dark)" />
+    <rect x="3" y="-3" width="1" height="6" fill="url(#stripe-light)" />
+    <rect x="4" y="-3" width="1" height="6" fill="url(#stripe-dark)" />
+    <rect x="-6" y="-3" width="12" height="6" filter="url(#grain-dark)" opacity="0.5" />
+    <rect x="-6" y="-3" width="12" height="6" filter="url(#grain-light)" opacity="0.35" />
+
+    <!-- nets in the goal pockets, deeper in shadow toward the back -->
+    <rect x="-6" y="-1.2" width="1" height="2.4" fill="url(#net-depth-left)" />
+    <rect x="5" y="-1.2" width="1" height="2.4" fill="url(#net-depth-right)" />
+    <rect x="-6" y="-1.2" width="1" height="2.4" fill="url(#net-shadow)" />
+    <rect x="5" y="-1.2" width="1" height="2.4" fill="url(#net-shadow)" />
+    <rect x="-6" y="-1.2" width="1" height="2.4" fill="url(#net)" />
+    <rect x="5" y="-1.2" width="1" height="2.4" fill="url(#net)" />
+
+    <!-- the board's shadow on the grass -->
+    <use href="#wall" fill="none" stroke="#000000" stroke-opacity="0.55" stroke-width="0.1" filter="url(#soft)"
+      transform="translate(0.03 0.05)" />
+  </g>
+
+  <!-- goal frames: a crossbar on each goal line and a post at each end, casting a shadow -->
+  <g id="goal-frames">
+    <g fill="#000000" fill-opacity="0.35" transform="translate(0.05 0.06)">
+      <rect x="-5.05" y="-1.2" width="0.05" height="2.4" />
+      <circle cx="-5.025" cy="-1.2" r="0.07" />
+      <circle cx="-5.025" cy="1.2" r="0.07" />
+      <rect x="5" y="-1.2" width="0.05" height="2.4" />
+      <circle cx="5.025" cy="-1.2" r="0.07" />
+      <circle cx="5.025" cy="1.2" r="0.07" />
+    </g>
+    <g fill="#f6f6f2">
+      <rect x="-5.05" y="-1.2" width="0.05" height="2.4" />
+      <rect x="5" y="-1.2" width="0.05" height="2.4" />
+    </g>
+    <g fill="url(#post)">
+      <circle cx="-5.025" cy="-1.2" r="0.07" />
+      <circle cx="-5.025" cy="1.2" r="0.07" />
+      <circle cx="5.025" cy="-1.2" r="0.07" />
+      <circle cx="5.025" cy="1.2" r="0.07" />
+    </g>
+  </g>
+
+  <rect id="light-over" x="-20" y="-15" width="40" height="30" fill="url(#light)" />
+
+  <g id="markings" fill="none" stroke="#ffffff" stroke-width="0.04" stroke-opacity="0.6">
+    <!-- touchline, along the wall -->
+    <use href="#wall" stroke-width="0.08" stroke-opacity="1" />
+    <!-- halfway line, center circle and spot -->
+    <line x1="0" y1="-3" x2="0" y2="3" />
+    <circle cx="0" cy="0" r="0.9" />
+    <circle cx="0" cy="0" r="0.06" fill="#ffffff" fill-opacity="0.6" stroke="none" />
+    <!-- penalty areas, closed by the goal lines, and penalty spots -->
+    <polygon points="-5,-1.8 -3.5,-1.8 -3.5,1.8 -5,1.8" />
+    <polygon points="5,-1.8 3.5,-1.8 3.5,1.8 5,1.8" />
+    <circle cx="-3.9" cy="0" r="0.05" fill="#ffffff" fill-opacity="0.6" stroke="none" />
+    <circle cx="3.9" cy="0" r="0.05" fill="#ffffff" fill-opacity="0.6" stroke="none" />
+  </g>
+
+  <line class="goal" data-team="red" x1="-5" y1="-1.2" x2="-5" y2="1.2" stroke="#ff411a" stroke-width="0.06" />
+  <line class="goal" data-team="blue" x1="5" y1="-1.2" x2="5" y2="1.2" stroke="#0077ff" stroke-width="0.06" />
+
+
+
+  <circle id="ball" cx="0" cy="0" r="0.23" fill="#ffffff" stroke="#222222" stroke-width="0.02" />
+</svg>
