@@ -4,6 +4,12 @@ import { type GameRuntime } from "./context";
 // emit an event or set a signal inline.
 
 /** @action */
+export function playComputer({ emit }: GameRuntime) {
+  emit("play-computer");
+}
+
+/** Two players taking turns on this device. */
+/** @action */
 export function playOffline({ emit }: GameRuntime) {
   emit("play-offline");
 }

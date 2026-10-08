@@ -17,6 +17,14 @@ const MAX_FRAME_TIME = 50;
 // a shot that is still going after this long is ended anyway, in ms
 const MAX_SHOT_TIME = 15000;
 
+// how players and the ball slide and bounce, the computer plans its shots with these too
+export const PLAYER_DAMPING = 4;
+export const PLAYER_DENSITY = 0.8;
+export const PLAYER_RESTITUTION = 0.99;
+export const BALL_DAMPING = 3.5;
+export const BALL_DENSITY = 0.5;
+export const BALL_RESTITUTION = 0.99;
+
 /**
  * Physics: maps game data to bodies, steps the world, and turns collisions and rest into game events.
  */
@@ -152,15 +160,15 @@ export class Physics extends Middleware<SoccerContext> {
       bullet: true,
       position: { x: data.x, y: data.y },
       angle: data.angle,
-      linearDamping: 3.5,
+      linearDamping: BALL_DAMPING,
       angularDamping: 1.6,
       userData: data,
     });
     body.createFixture({
       shape: new Circle(data.radius),
       friction: 0.2,
-      restitution: 0.99,
-      density: 0.5,
+      restitution: BALL_RESTITUTION,
+      density: BALL_DENSITY,
     });
     return body;
   }
@@ -171,15 +179,15 @@ export class Physics extends Middleware<SoccerContext> {
       bullet: true,
       position: { x: data.x, y: data.y },
       angle: data.angle,
-      linearDamping: 4,
+      linearDamping: PLAYER_DAMPING,
       angularDamping: 1.6,
       userData: data,
     });
     body.createFixture({
       shape: new Circle(data.radius),
       friction: 0.1,
-      restitution: 0.99,
-      density: 0.8,
+      restitution: PLAYER_RESTITUTION,
+      density: PLAYER_DENSITY,
     });
     return body;
   }

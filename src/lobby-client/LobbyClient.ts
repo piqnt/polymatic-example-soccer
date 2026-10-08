@@ -59,6 +59,8 @@ export class LobbyClient extends Middleware<LobbyClientContext> {
   // a game was started since the page loaded, offline or online
   started = false;
   startTimeout: ReturnType<typeof setTimeout> | null = null;
+  // the offline game is against the computer, until two players at this device are asked for
+  computer = true;
   // counts rooms closed, so a room still waiting for its login is not opened after another was
   closed = 0;
 
@@ -68,6 +70,7 @@ export class LobbyClient extends Middleware<LobbyClientContext> {
     this.on("activate", this.handleActivate);
     this.on("deactivate", this.handleDeactivate);
 
+    this.on("play-computer", this.handlePlayComputer);
     this.on("play-offline", this.handlePlayOffline);
     this.on("create-room", this.handleCreateRoom);
     this.on("join-room", this.handleJoinRoom);
@@ -185,14 +188,27 @@ export class LobbyClient extends Middleware<LobbyClientContext> {
     this.started = true;
     this.closeRoom();
     this.context.hud.mode.value = "offline";
-    Runtime.activate((this.room = new MainOffline()), { hud: this.context.hud });
+    // the computer plays blue
+    Runtime.activate((this.room = new MainOffline()), {
+      hud: this.context.hud,
+      computer: this.computer ? "blue" : undefined,
+    });
   }
 
+  handlePlayComputer = () => {
+    this.playOffline(true);
+  };
+
   handlePlayOffline = () => {
+    this.playOffline(false);
+  };
+
+  playOffline(computer: boolean) {
+    this.computer = computer;
     leaveRoom();
     this.context.hud.rejoinRoom.value = null;
     this.startOffline();
-  };
+  }
 
   handleRejoinRoom = () => {
     const id = this.context.hud.rejoinRoom.value;

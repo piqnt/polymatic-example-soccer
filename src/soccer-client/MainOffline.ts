@@ -1,5 +1,6 @@
 import { Middleware } from "polymatic";
 
+import { Computer } from "../soccer/Computer";
 import { Pitch } from "../soccer/Pitch";
 import { Physics } from "../soccer/Physics";
 import { FrameLoop } from "./FrameLoop";
@@ -11,7 +12,7 @@ import { type ClientContext } from "./ClientContext";
 import { FIELD } from "./field";
 
 /**
- * Offline game: two players take turns on this device.
+ * Offline game: two players take turns on this device, or one plays the computer when the context names its team.
  */
 export class MainOffline extends Middleware<ClientContext> {
   constructor() {
@@ -20,6 +21,7 @@ export class MainOffline extends Middleware<ClientContext> {
     this.use(new PixiManager());
     this.use(new Pitch());
     this.use(new Physics());
+    this.use(new Computer());
     this.use(new Status());
     this.on("activate", this.handleActivate);
     this.on("pixi-ready", this.handlePixiReady);

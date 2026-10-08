@@ -16,7 +16,7 @@ Two teams take turns. Drag one of your players and release to shoot it, like a s
 - After a goal both teams go back to formation, and the team that conceded kicks off.
 - The first team to score 3 goals wins.
 
-Play Offline is for two players taking turns on one device. Create Room starts an online game and shows a room id for the other player to enter with Join Room. Anyone joining after the first two watches.
+The game starts against the computer, which plays blue; Play Computer starts a new one. Two Players is for two players taking turns on one device. Create Room starts an online game and shows a room id for the other player to enter with Join Room. Anyone joining after the first two watches.
 
 ### How to run the code
 

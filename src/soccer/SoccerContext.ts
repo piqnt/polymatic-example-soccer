@@ -86,4 +86,8 @@ export interface SoccerContext {
   winner?: Color | null;
 
   users?: User[];
+
+  // offline only: the team the computer plays, if any, and the shot it is lining up, see Computer
+  computer?: Color;
+  computerAim?: { key: string; impulse: Point } | null;
 }

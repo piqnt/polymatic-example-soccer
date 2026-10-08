@@ -198,18 +198,28 @@ export class Terminal extends Middleware<ClientContext> {
     this.aim.clear();
     const player = this.aimed();
     if (player) {
-      const drag = this.drag(player, this.pointer);
-      this.aim
-        .moveTo(player.x, player.y)
-        .lineTo(player.x - drag.x, player.y - drag.y)
-        .stroke({ width: LINE_WIDTH, color: 0xffffff, alpha: 0.5 })
-        .moveTo(player.x, player.y)
-        .lineTo(player.x + drag.x * 0.5, player.y + drag.y * 0.5)
-        .stroke({ width: LINE_WIDTH * 1.5, color: COLORS[player.color], alpha: 0.9 });
+      this.drawAim(player, this.drag(player, this.pointer));
     } else {
       this.aimKey = null;
+      // the computer's shot, drawn as if it were dragged
+      const shot = this.context.computerAim;
+      const aimed = shot && players.find((p) => p.key === shot.key);
+      if (aimed) {
+        this.drawAim(aimed, { x: shot.impulse.x / SHOOT_STRENGTH, y: shot.impulse.y / SHOOT_STRENGTH });
+      }
     }
   };
+
+  /** The drag back from the player, and the way it will go. */
+  drawAim(player: Player, drag: Point) {
+    this.aim
+      .moveTo(player.x, player.y)
+      .lineTo(player.x - drag.x, player.y - drag.y)
+      .stroke({ width: LINE_WIDTH, color: 0xffffff, alpha: 0.5 })
+      .moveTo(player.x, player.y)
+      .lineTo(player.x + drag.x * 0.5, player.y + drag.y * 0.5)
+      .stroke({ width: LINE_WIDTH * 1.5, color: COLORS[player.color], alpha: 0.9 });
+  }
 
   wallDriver = Driver.create<Wall, Container>({
     filter: (data) => data.type === "wall",
